@@ -2,8 +2,10 @@ package me.micartey.mvml;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.experimental.Accessors;
 import me.micartey.mvml.commons.FileUtilities;
+import me.micartey.mvml.commons.Streams;
 import me.micartey.mvml.nodes.*;
 
 import java.io.File;
@@ -21,6 +23,7 @@ public class MvmlConfiguration {
 
     private final File file;
 
+    private String template;
     private boolean createBackup;
     private int spaces = 2;
 
@@ -38,6 +41,22 @@ public class MvmlConfiguration {
                     new File(this.file.getParent(), this.file.getName() + ".backup").toPath(),
                     StandardCopyOption.REPLACE_EXISTING
             );
+        }
+
+        loadTemplate: {
+            if (this.template == null)
+                break loadTemplate;
+
+            if (!this.file.exists()) {
+                file.createNewFile();
+
+                Files.write(file.toPath(), Streams.getValues(MvmlConfiguration.class.getResourceAsStream("/" + this.template)));
+                break loadTemplate;
+            }
+
+            this.parseFile();
+            this.migrate();
+            this.save();
         }
 
         this.parseFile();
@@ -293,7 +312,8 @@ public class MvmlConfiguration {
         return list;
     }
 
-    public void save() throws Exception {
+    @SneakyThrows
+    public void save() {
         Node root = FILE_BUFFER.get(this.file);
 
         List<String> lines = new ArrayList<>(toString(root, ""));
