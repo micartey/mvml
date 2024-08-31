@@ -4,10 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import me.micartey.mvml.commons.FileUtilities;
-import me.micartey.mvml.nodes.LeafNode;
-import me.micartey.mvml.nodes.Node;
-import me.micartey.mvml.nodes.ParentNode;
-import me.micartey.mvml.nodes.TextNode;
+import me.micartey.mvml.nodes.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +17,7 @@ import java.util.*;
 @Accessors(chain = true)
 public class MvmlConfiguration {
 
-    private static final Map<File, List<Node>> FILE_BUFFER = new HashMap<>();
+    private static final Map<File, Node> FILE_BUFFER = new HashMap<>();
 
     private final File file;
 
@@ -47,14 +44,14 @@ public class MvmlConfiguration {
     }
 
     private void parseFile() throws IOException {
-        LinkedList<Node> nodes = new LinkedList<>();
+        Node root = new RootNode();
 
         readLine: for (String line : FileUtilities.readFile(this.file)) {
             /*
              * Root comments
              */
             if (line.startsWith("#")) {
-                nodes.add(new TextNode(line));
+                root.getChildren().add(new TextNode(line));
                 continue;
             }
 
@@ -62,7 +59,7 @@ public class MvmlConfiguration {
              * Empty lines
              */
             if (line.isEmpty()) {
-                Node node = nodes.getLast();
+                Node node = root.getChildren().getLast();
                 while (!node.getChildren().isEmpty())
                     node = node.getChildren().getLast();
 
@@ -84,11 +81,11 @@ public class MvmlConfiguration {
                     String key = line.substring(index, line.length() - 1);
 
                     if (index == 0) {
-                        nodes.addLast(new ParentNode(key)); // Parent Node
+                        root.getChildren().addLast(new ParentNode(key)); // Parent Node
                         continue readLine;
                     }
 
-                    Node parent = nodes.getLast();
+                    Node parent = root.getChildren().getLast();
                     for (int depth = 0; depth < index / this.spaces - 1; depth++) {
                         parent = parent.getChildren().getLast();
                     }
@@ -107,7 +104,7 @@ public class MvmlConfiguration {
             if (line.contains("#")) {
                 long indents = this.countIndents(line);
 
-                Node node = nodes.getLast();
+                Node node = root.getChildren().getLast();
                 for (int i = 0; i < indents - 1; i++)
                     node = node.getChildren().getLast();
 
@@ -128,13 +125,13 @@ public class MvmlConfiguration {
 
                 // Root level value node
                 if (indents == 0) {
-                    nodes.add(new LeafNode(key, value));
+                    root.getChildren().add(new LeafNode(key, value));
                     continue;
                 }
 
                 // Non root level value node
 
-                Node node = nodes.getLast();
+                Node node = root.getChildren().getLast();
                 for (int i = 0; i < indents - 1; i++)
                     node = node.getChildren().getLast();
 
@@ -145,7 +142,9 @@ public class MvmlConfiguration {
             throw new RuntimeException("No implemention found for: " + line);
         }
 
-        FILE_BUFFER.put(file, nodes);
+        FILE_BUFFER.put(file, root);
+
+        System.out.println(root);
     }
 
     /**
@@ -155,23 +154,19 @@ public class MvmlConfiguration {
      * @return Node if found - if not, it will throw a RuntimeException
      */
     private Node getNodeByKey(String key) {
-        List<Node> nodes = FILE_BUFFER.get(this.file);
+        Node root = FILE_BUFFER.get(this.file);
 
         String[] keys = key.split("\\.");
 
-        Node match = nodes.stream().filter(node -> keys[0].equals(node.getKey()))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Key not present: " + key));
+        Node node = root;
 
-        for (int index = 1; index < keys.length; index++) {
-            String keyPart = keys[index];
-
-            match = match.getChildren().stream().filter(node -> keyPart.equals(node.getKey()))
+        for (String keyPart : keys) {
+            node = node.getChildren().stream().filter(it -> keyPart.equals(it.getKey()))
                     .findFirst()
                     .orElseThrow(() -> new RuntimeException("Key not present: " + key));
         }
 
-        return match;
+        return node;
     }
 
 
@@ -223,8 +218,10 @@ public class MvmlConfiguration {
         List<Map.Entry<String, String>> result = new ArrayList<>();
 
         if (!(node instanceof LeafNode)) {
+            String prefix = path == null ? "" : path + ".";
+
             for (Node child : node.getChildren()) {
-                result.addAll(readNode(child, path + "." + child.getKey()));
+                result.addAll(readNode(child, prefix + child.getKey()));
             }
 
             return result;
@@ -257,14 +254,8 @@ public class MvmlConfiguration {
      * @return list of pairs
      */
     public List<Map.Entry<String, String>> readAll() {
-        List<Node> nodes = FILE_BUFFER.get(this.file);
-
-        List<Map.Entry<String, String>> result = new ArrayList<>();
-        for (Node node : nodes) {
-            result.addAll(this.readNode(node, node.getKey()));
-        }
-
-        return result;
+        Node root = FILE_BUFFER.get(this.file);
+        return this.readNode(root, null);
     }
 
     /**
@@ -276,33 +267,14 @@ public class MvmlConfiguration {
      * @param value Value
      */
     public void set(String key, String value) {
-        List<Node> nodes = FILE_BUFFER.get(this.file);
+        Node root = FILE_BUFFER.get(this.file);
 
-        int index = key.indexOf(".");
-        String keyParent = key.substring(0, index > 0 ? index : key.length());
+        Node child = createNodePath(root, key);
 
-        Node parent = nodes.stream().filter(node -> keyParent.equals(node.getKey()))
-                .findFirst()
-                .orElseGet(() -> {
-                    if (key.contains(".")) {
-                        Node node = new ParentNode(keyParent);
-                        nodes.add(node);
-                        return node;
-                    }
+        if (!(child instanceof LeafNode))
+            throw new RuntimeException("Node is not final: " + child.getKey());
 
-                    Node node = new LeafNode(keyParent, null);
-                    nodes.add(node);
-                    return node;
-                });
-
-        if (index > 0) {
-            parent = createNodePath(parent, key.substring(Math.min(index + 1, key.length())));
-        }
-
-        if (!(parent instanceof LeafNode))
-            throw new RuntimeException("Node is not final: " + parent.getKey());
-
-        ((LeafNode) parent).setValue(value);
+        ((LeafNode) child).setValue(value);
     }
 
     private List<String> toString(Node node, String prefix) {
@@ -310,28 +282,25 @@ public class MvmlConfiguration {
 
         if (node instanceof TextNode)
             list.add(node.toData());
-        else
+        else if (!(node instanceof RootNode))
             list.add(prefix + node.toData());
 
         for (Node child : node.getChildren()) {
-            StringBuilder indents = new StringBuilder(" ");
-            for (int i = 1; i < this.spaces; i++)
+            StringBuilder indents = new StringBuilder();
+
+            for (int i = 0; i < this.spaces; i++)
                 indents.append(" ");
 
-            list.addAll(toString(child, prefix + indents));
+            list.addAll(toString(child, prefix + (node instanceof RootNode ? "" : indents)));
         }
 
         return list;
     }
 
     public void save() throws Exception {
-        List<Node> nodes = FILE_BUFFER.get(this.file);
+        Node root = FILE_BUFFER.get(this.file);
 
-        List<String> lines = new ArrayList<>();
-
-        for (Node node : nodes) {
-            lines.addAll(toString(node, ""));
-        }
+        List<String> lines = new ArrayList<>(toString(root, ""));
 
         FileUtilities.writeFile(this.file, lines);
     }
@@ -359,8 +328,6 @@ public class MvmlConfiguration {
     }
 
     private long countIndents(String line) {
-//        return line.chars().filter(c -> c == '\t').count();
-
         long indents = 0;
         for (char c : line.toCharArray()) {
             if (c != ' ')

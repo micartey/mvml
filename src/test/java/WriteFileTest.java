@@ -40,6 +40,7 @@ public class WriteFileTest {
         configuration.save();
 
         val entries = configuration.readAll();
+        System.out.println(entries);
 
         configuration.set("test.test", "456");
         configuration.save();
