@@ -55,6 +55,9 @@ public class MvmlConfiguration {
             }
 
             this.parseFile();
+
+            Files.write(file.toPath(), Streams.getValues(MvmlConfiguration.class.getResourceAsStream("/" + this.template)));
+
             this.migrate();
             this.save();
         }
