@@ -129,8 +129,6 @@ public class MvmlConfiguration {
                     continue;
                 }
 
-                // Non root level value node
-
                 Node node = root.getChildren().getLast();
                 for (int i = 0; i < indents - 1; i++)
                     node = node.getChildren().getLast();
@@ -143,8 +141,6 @@ public class MvmlConfiguration {
         }
 
         FILE_BUFFER.put(file, root);
-
-        System.out.println(root);
     }
 
     /**
