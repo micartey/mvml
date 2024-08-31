@@ -10,12 +10,12 @@ import java.io.IOException;
 
 public class WriteFileTest {
 
-    private static final File TEST_FILE = new File("src/test/resources/test.yml");
+    private static final File TEST_FILE = new File("src/test/resources/tmp.yml");
 
     private MvmlConfiguration configuration;
 
     @BeforeEach
-    public void prepare() throws IOException {
+    public void setup() throws IOException {
         TEST_FILE.createNewFile();
 
         this.configuration = new MvmlConfiguration(TEST_FILE)
