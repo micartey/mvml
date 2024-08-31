@@ -29,6 +29,6 @@ public class TemplateTest {
 
     @AfterEach
     public void tearDown() {
-        FILE.delete();
+//        FILE.delete();
     }
 }
