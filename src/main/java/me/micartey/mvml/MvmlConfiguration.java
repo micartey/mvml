@@ -3,7 +3,6 @@ package me.micartey.mvml;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import me.micartey.mvml.commons.ConsoleColors;
 import me.micartey.mvml.commons.FileUtilities;
 import me.micartey.mvml.nodes.LeafNode;
 import me.micartey.mvml.nodes.Node;
@@ -359,7 +358,7 @@ public class MvmlConfiguration {
         return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z';
     }
 
-    public long countIndents(String line) {
+    private long countIndents(String line) {
 //        return line.chars().filter(c -> c == '\t').count();
 
         long indents = 0;
