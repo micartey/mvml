@@ -138,10 +138,10 @@ public class MvmlConfiguration {
              * Value nodes
              */
             if (line.contains(":")) {
-                String[] split = line.split(":");
+                int index = line.indexOf(":");
 
-                String key = split[0].trim();
-                String value = split[1].trim();
+                String key = line.substring(0, index);
+                String value = line.substring(index +  1);
 
                 long indents = this.countIndents(line);
 
