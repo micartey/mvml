@@ -13,6 +13,12 @@
       height="30"
     />
   </a>
+  <a href="https://micartey.github.io/mvml/docs/me/micartey/mvml/MvmlParser.html" target="_blank">
+    <img
+      src="https://img.shields.io/badge/javadoc-reference-5272B4.svg?style=for-the-badge"
+      height="30"
+    />
+  </a>
 </div>
 
 > [!IMPORTANT]\
@@ -54,12 +60,10 @@ MvmlParser parser = new MvmlConfiguration(file)
         .setTemplate(stream)
         .load();
 
-String value = parser.get("my.field");
-int castedValue = parser.get("my.field", int.class);
-
-parser.set("my.field", 123);
-parser.remove("my.field");
+String value = parser.get("my.field"); // Returns 123
 ```
+
+Please check out the [JavaDocs](https://micartey.github.io/mvml/docs/me/micartey/mvml/MvmlParser.html) for an overview of all avialable operations.
 
 ## Parse Custom Types
 

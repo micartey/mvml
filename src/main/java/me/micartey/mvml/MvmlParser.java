@@ -279,6 +279,13 @@ public class MvmlParser {
         ((LeafNode) child).setValue(String.valueOf(value));
     }
 
+    /**
+     * Recursive method to get all keys of a (sub-)tree
+     *
+     * @param node parent Node
+     * @param prefix current key path
+     * @return list of keys
+     */
     private List<String> toString(Node node, String prefix) {
         LinkedList<String> list = new LinkedList<>();
 
@@ -299,6 +306,9 @@ public class MvmlParser {
         return list;
     }
 
+    /**
+     * Overwrite the file on disc with information stored in memory
+     */
     @SneakyThrows
     public void save() {
         Node root = FILE_BUFFER.get(this.configuration.getFile());
@@ -308,6 +318,9 @@ public class MvmlParser {
         FileUtilities.writeFile(this.configuration.getFile(), lines);
     }
 
+    /**
+     * Overwrite the memory with information stored on disc
+     */
     @SneakyThrows
     public void read() {
         this.parseFile();
