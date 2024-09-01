@@ -140,8 +140,8 @@ public class MvmlConfiguration {
             if (line.contains(":")) {
                 int index = line.indexOf(":");
 
-                String key = line.substring(0, index);
-                String value = line.substring(index +  1);
+                String key = line.substring(0, index).trim();
+                String value = line.substring(index +  1).trim();
 
                 long indents = this.countIndents(line);
 
