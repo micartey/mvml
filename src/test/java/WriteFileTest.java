@@ -1,5 +1,6 @@
 import lombok.val;
 import me.micartey.mvml.MvmlConfiguration;
+import me.micartey.mvml.MvmlParser;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,46 +13,45 @@ public class WriteFileTest {
 
     private static final File TEST_FILE = new File("src/test/resources/tmp.yml");
 
-    private MvmlConfiguration configuration;
+    private MvmlParser parser;
 
     @BeforeEach
     public void setup() throws IOException {
         TEST_FILE.createNewFile();
 
-        this.configuration = new MvmlConfiguration(TEST_FILE)
-                .setSpaces(2);
-
-        this.configuration.load();
+        this.parser = new MvmlConfiguration(TEST_FILE)
+                .setSpaces(2)
+                .load();
     }
 
     @Test
     public void testWriteEmptyFile() throws Exception {
-        configuration.set("test.test", "123");
+        parser.set("test.test", "123");
 
-        configuration.save();
-        configuration.load();
+        parser.save();
+        parser.read();
 
-        Assertions.assertEquals(configuration.get("test.test"), "123");
+        Assertions.assertEquals(parser.get("test.test"), "123");
     }
 
     @Test
     public void testOverwrite() throws Exception {
-        configuration.set("test.test", "123");
-        configuration.save();
+        parser.set("test.test", "123");
+        parser.save();
 
-        val entries = configuration.readAll();
+        val entries = parser.readAll();
         System.out.println(entries);
 
-        configuration.set("test.test", "456");
-        configuration.save();
+        parser.set("test.test", "456");
+        parser.save();
 
         entries.forEach(entry -> {
-            configuration.set(entry.getKey(), entry.getValue());
+            parser.set(entry.getKey(), entry.getValue());
         });
 
-        configuration.save();
+        parser.save();
 
-        Assertions.assertEquals(configuration.get("test.test"), "123");
+        Assertions.assertEquals(parser.get("test.test"), "123");
     }
 
     @AfterEach

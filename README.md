@@ -38,6 +38,9 @@ my:
   # Some other comment
   field: 123
 
+  # List representation will look like this
+  list: ["Some", "String", "Array"]
+
 root-level-field: false
 ```
 
@@ -47,8 +50,30 @@ The mvml parser gives you a string without trying to interpret it, altough this 
 
 
 ```java
-MvmlConfiguration configuration = new MvmlConfiguration(file);
-configuration.load();
+MvmlParser parser = new MvmlConfiguration(file)
+        .setTemplate(stream)
+        .load();
 
-String value = configuration.get("my.field"); // Retuns: 123
+String value = parser.get("my.field");
+int castedValue = parser.get("my.field", int.class);
+
+parser.set("my.field", 123);
+parser.remove("my.field");
 ```
+
+## Parse Custom Types
+
+If you want to parse custom data, make sure your object has the following to methods:
+
+```java
+@Override
+public String toString() {
+    // return a String represetation
+}
+
+public YouDataType valueOf(String representation) {
+    // return instance of YouDataType from String representation
+}
+```
+
+These methods will automatically be invoked by mvml when calling the `get(field, class)` method
