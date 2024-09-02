@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class WriteFileTest {
 
-    private static final File TEST_FILE = new File("src/test/resources/tmp.yml");
+    private static final File TEST_FILE = new File("src/test/resources/temp.yml");
 
     private MvmlParser parser;
 
