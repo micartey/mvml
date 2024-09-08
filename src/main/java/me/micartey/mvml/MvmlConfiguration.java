@@ -18,6 +18,7 @@ public class MvmlConfiguration {
     private final File file;
 
     private String template;
+    private Class<?> streamClass;
     private boolean createBackup;
     private int spaces = 2;
 
@@ -27,6 +28,10 @@ public class MvmlConfiguration {
 
     public MvmlParser load() throws IOException {
         MvmlParser parser = new MvmlParser(this);
+
+        if (streamClass == null) {
+            streamClass = MvmlConfiguration.class;
+        }
 
         createBackup: {
             if (!this.createBackup)
@@ -46,13 +51,13 @@ public class MvmlConfiguration {
             if (!this.file.exists()) {
                 file.createNewFile();
 
-                Files.write(file.toPath(), Streams.getValues(MvmlConfiguration.class.getResourceAsStream("/" + this.template)));
+                Files.write(file.toPath(), Streams.getValues(streamClass.getResourceAsStream("/" + this.template)));
                 break loadTemplate;
             }
 
             parser.parseFile();
 
-            Files.write(file.toPath(), Streams.getValues(MvmlConfiguration.class.getResourceAsStream("/" + this.template)));
+            Files.write(file.toPath(), Streams.getValues(streamClass.getResourceAsStream("/" + this.template)));
 
             parser.migrate();
             parser.save();
