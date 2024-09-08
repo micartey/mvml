@@ -2,6 +2,7 @@ package me.micartey.mvml.commons;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,6 +30,10 @@ public class FileUtilities {
     }
 
     public static List<String> readFile(File file) throws IOException {
-        return Files.readAllLines(file.toPath());
+        try {
+            return Files.readAllLines(file.toPath());
+        } catch (Exception exception) {
+            return Collections.emptyList();
+        }
     }
 }
