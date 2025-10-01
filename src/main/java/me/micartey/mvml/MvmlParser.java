@@ -357,6 +357,10 @@ public class MvmlParser {
 
                 return Arrays.asList(data.split(", "));
             }
+            
+            if (type.equals(String.class)) {
+                return name;
+            }
 
             String className = type.equals(long.class) ? "java.lang.Long" : type.equals(int.class) ? "java.lang.Integer" : type.equals(double.class) ? "java.lang.Double" : type.equals(float.class) ? "java.lang.Float" : type.equals(byte.class) ? "java.lang.Byte" : type.equals(boolean.class) ? "java.lang.Boolean" : type.equals(short.class) ? "java.lang.Short" : type.getName();
             Method method = Class.forName(className).getMethod("valueOf", String.class);
