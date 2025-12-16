@@ -42,6 +42,22 @@ public class MvmlParser {
             }
 
             /*
+             * Calculate indent space if not set manually
+             */
+            if (this.configuration.getSpaces() < 0 && line.charAt(0) <= ' ' && line.contains(":")) {
+                int spaces = 0;
+
+                for (int index = 0; index < line.length(); index++) {
+                    if (line.charAt(index) > ' ')
+                        break;
+
+                    spaces++;
+                }
+
+                this.configuration.setSpaces(spaces);
+            }
+
+            /*
              * Parent node
              */
             if (line.endsWith(":")) {

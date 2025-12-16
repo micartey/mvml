@@ -20,7 +20,7 @@ public class MvmlConfiguration {
     private String template;
     private Class<?> streamClass;
     private boolean createBackup;
-    private int spaces = 2;
+    private int spaces = -1;
 
     public MvmlConfiguration(File file) {
         this.file = file;
