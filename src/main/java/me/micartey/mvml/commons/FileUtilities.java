@@ -3,10 +3,7 @@ package me.micartey.mvml.commons;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class FileUtilities {
 

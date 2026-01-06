@@ -1,7 +1,5 @@
 package me.micartey.mvml.nodes;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -21,9 +19,4 @@ public abstract class Node {
 
     public abstract String toData();
 
-    @Override
-    public String toString() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        return gson.toJson(this);
-    }
 }

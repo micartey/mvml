@@ -21,6 +21,7 @@ public class TemplateTest {
                 .load();
 
         parser.set("License", "123123");
+        parser.save();
 
         Assertions.assertEquals(parser.get("License"), "123123");
     }
