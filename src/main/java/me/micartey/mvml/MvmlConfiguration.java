@@ -51,13 +51,13 @@ public class MvmlConfiguration {
             if (!this.file.exists()) {
                 file.createNewFile();
 
-                Files.write(file.toPath(), Streams.getValues(streamClass.getResourceAsStream("/" + this.template)));
+                Files.write(file.toPath(), Streams.getValues(streamClass.getClassLoader().getResourceAsStream(this.template)));
                 break loadTemplate;
             }
 
             parser.parseFile();
 
-            Files.write(file.toPath(), Streams.getValues(streamClass.getResourceAsStream("/" + this.template)));
+            Files.write(file.toPath(), Streams.getValues(streamClass.getClassLoader().getResourceAsStream(this.template)));
 
             parser.migrate();
             parser.save();
