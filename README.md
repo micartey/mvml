@@ -1,21 +1,15 @@
 # mvml
 
 <div align="center">
-  <a href="https://www.oracle.com/java/">
+  <a href="https://artifacts.micartey.dev/#/public/me/micartey/mvml">
     <img
-      src="https://img.shields.io/badge/Written%20in-java-%23EF4041?style=for-the-badge"
-      height="30"
-    />
-  </a>
-  <a href="https://jitpack.io/#micartey/mvml/master-SNAPSHOT">
-    <img
-      src="https://img.shields.io/badge/jitpack-master-%2321f21?style=for-the-badge"
+      src="https://artifacts.micartey.dev/api/badge/latest/public/me/micartey/mvml?name=me.micartey.mvml&prefix=v"
       height="30"
     />
   </a>
   <a href="https://micartey.github.io/mvml/docs/me/micartey/mvml/MvmlParser.html" target="_blank">
     <img
-      src="https://img.shields.io/badge/javadoc-reference-5272B4.svg?style=for-the-badge"
+      src="https://img.shields.io/badge/javadoc-reference-5272B4.svg"
       height="30"
     />
   </a>
